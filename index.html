@@ -54,7 +54,7 @@ Case Sensitive Check: <input type="checkbox" name="casesensitive">
 </div>
 </pre>
 
-<div>
+<div id="diffs">
 	<table ng-if="differences.length > 0" class="table table-striped">
 		<tr>
 			<th>Coordinates</th>
@@ -124,6 +124,10 @@ angular.module("comparer", [])
 				$scope.workbooks = [];
 				$scope.toCompare = 0;
 				$scope.$apply();
+				document.getElementById("diffs").scrollIntoView({
+					behavior: "smooth",
+					block: "start"
+				});
 			}
 		}
 
