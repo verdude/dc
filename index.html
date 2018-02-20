@@ -97,11 +97,14 @@ angular.module("comparer", [])
             $scope.files.forEach(function(f) {
                 do_file([f]);
             });
-            // ipcRenderer.send("beginCompare", {paths:$scope.files.map((f)=>{return f.path}), caseSensitive: false});
         };
 
         function displayError(msg) {
             $("#alert").html('<div class="alert alert-danger alert-dismissable fade in"> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Error!</strong> '+msg+'</div>');
+        }
+
+        function displayWarning(msg) {
+            $("#alert").html('<div class="alert alert-warning alert-dismissable fade in"> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Warning!</strong> '+msg+'</div>');
         }
 
         function addwb(wb) {
@@ -123,6 +126,13 @@ angular.module("comparer", [])
                     behavior: "smooth",
                     block: "start"
                 });
+                let level = data.error?"error":data.warning?"warning":undefined;
+                if (level === "error") {
+                    displayError(data.error + (data.warning || ""));
+                }
+                else if (level === "warning") {
+                    displayWarning(data.warning);
+                }
             }
         }
 

@@ -41,18 +41,23 @@ ${metrics}`);
 
     compare() {
         if (this.sheets.length <= 1) {
-            console.log("NO DIFFERENCES IN FILES...EXITING COMPARE PROCEDURE.");
+            console.log("NO FILES PROVIDED...EXITING COMPARE PROCEDURE.");
             let data = {
                 titles: this.sheets.map((x)=>x.title),
                 differences: [],
-                message: "No Sheets submitted"
+                error: "No Sheets submitted"
             }
-            return;
+            return data;
         }
         console.log("INITIATING COMPARE PROCEDURE...");
-        const rows = Math.min.apply(Math, this.sheets.map((x)=>x.numRows));
-        const cols = Math.min.apply(Math, this.sheets.map((x)=>x.numColumns));
+        const sheets_rows = this.sheets.map((x)=>x.numRows);
+        const sheets_cols = this.sheets.map((x)=>x.numColumns);
+        const rows = Math.min.apply(Math, sheets_rows);
+        const cols = Math.min.apply(Math, sheets_cols);
 
+        let row_diff_msg = sheets_rows.every((n) => n === sheets_rows[0]) ? [] : this.sheets.map(x => x.sheetnames + " has " + x.numRows + " rows");
+        let col_diff_msg = sheets_cols.every((n) => n === sheets_cols[0]) ? [] : this.sheets.map(x => x.sheetnames + " has " + x.numCols + " columns");
+        let warning_msg = row_diff_msg.concat(col_diff_msg).join(", ");
         this.verbose_loggage(rows, cols);
 
         for (let y = 0; y < rows; y++) {
@@ -83,7 +88,8 @@ ${metrics}`);
                 // null and once to check for undefined
                 // if they are meaningfully different values in excel
                 return !diff.cells.every((c)=>c===null||c===undefined);
-            })
+            }),
+            warning: warning_msg.length > 0 ? warning_msg : undefined
         }
         console.log(`FOUND ${data.differences.length} DIFFERENCES`);
         return data;
