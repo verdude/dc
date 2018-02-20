@@ -8,7 +8,7 @@ class WBContainer {
         this.sheetnames = Object.keys(wb);
         if (this.sheetnames.length > 1) {
             this.error = true;
-            this.errorMessage = "Multiple sheets found in WorkBook.";
+            this.errorMessage = "Multiple sheets found in WorkBook. Currently only 1 sheet per workbook is supported.";
             return;
         } else if (this.sheetnames.length === 0) {
             this.error = true;

@@ -4,6 +4,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Sheet Compare</title>
 <style>
+li:hover, .hoverclass {
+    background:#ffcac7;
+}
 #drop{
     border:2px dashed #bbb;
     -moz-border-radius:5px;
@@ -48,7 +51,7 @@ Use readAsBinaryString: (when available) <input type="checkbox" name="userabs" c
 Case Sensitive Check: <input type="checkbox" name="casesensitive">
 <div ng-if="files.length > 0">
     <ul class="list-group">
-        <li href="#" class="list-group-item" ng-click="remove(file)" ng-repeat="file in files">{{file.name}}</li>
+        <li href="#" class="list-group-item hoverclass" ng-click="remove(file)" ng-repeat="file in files">{{file.name}}</li>
     </ul>
     <button class="btn btn-primary" ng-click="compare()">Compare</button>
 </div>
@@ -107,6 +110,10 @@ angular.module("comparer", [])
             $("#alert").html('<div class="alert alert-warning alert-dismissable fade in"> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Warning!</strong> '+msg+'</div>');
         }
 
+        function displaySuccess(msg) {
+            $("#alert").html('<div class="alert alert-success alert-dismissable fade in"> <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Success!</strong> '+msg+'</div>');
+        }
+
         function addwb(wb) {
             $scope.workbooks.push(wb);
             if ($scope.toCompare === $scope.workbooks.length) {
@@ -126,6 +133,9 @@ angular.module("comparer", [])
                     behavior: "smooth",
                     block: "start"
                 });
+                if (data.differences.length === 0) {
+                    displaySuccess("No differences Found.");
+                }
                 let level = data.error?"error":data.warning?"warning":undefined;
                 if (level === "error") {
                     displayError(data.error + (data.warning || ""));

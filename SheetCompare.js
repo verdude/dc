@@ -45,7 +45,7 @@ ${metrics}`);
             let data = {
                 titles: this.sheets.map((x)=>x.title),
                 differences: [],
-                error: "No Sheets submitted"
+                error: this.error ? this.error_msg : undefined
             }
             return data;
         }
@@ -89,7 +89,8 @@ ${metrics}`);
                 // if they are meaningfully different values in excel
                 return !diff.cells.every((c)=>c===null||c===undefined);
             }),
-            warning: warning_msg.length > 0 ? warning_msg : undefined
+            warning: warning_msg.length > 0 ? warning_msg : undefined,
+            error: this.error ? this.error_msg : undefined
         }
         console.log(`FOUND ${data.differences.length} DIFFERENCES`);
         return data;
@@ -103,7 +104,9 @@ ${metrics}`);
             if (sheet.ready()) {
                 this.sheets.push(sheet);
             } else {
-                 console.log("Error: " + sheet.errorMessage);
+                this.error = true;
+                this.error_msg = sheet.errorMessage;
+                console.log("Error: " + sheet.errorMessage);
             }
         } else {
             console.log("Attempted to insert a " + (typeof sheet) +
