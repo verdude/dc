@@ -1,18 +1,29 @@
 class SheetCompare {
-    contructor() {
+    constructor() {
         this.sheets = [];
         this.sheetTotal = 0;
         this.error = false;
         this.differences = [];
+        this.alphabet = Array(26);
+        for (let i = 0; i < this.alphabet.length; ++i) {
+            this.alphabet[i] = String.fromCharCode(i + 'A'.charCodeAt(0));
+        }
     }
 
-    configure(num, caseSensitive, send_results_proc) {
+    columnNumberToLetters(num) {
+        let remainder = num % 26;
+        let quotient = Math.floor(num / 26);
+        let firstLetter = quotient>0?this.alphabet[quotient-1]:this.alphabet[remainder];
+        let secondLetter = quotient>0?this.alphabet[remainder]:'';
+        return firstLetter+secondLetter;
+    }
+
+    configure(num, caseSensitive) {
         // reset
         this.sheetTotal = num;
         this.sheets = [];
         this.differences = [];
         this.caseSensitive = caseSensitive;
-        this.send_results_proc = send_results_proc;
         return this;
     }
 
@@ -31,6 +42,11 @@ ${metrics}`);
     compare() {
         if (this.sheets.length <= 1) {
             console.log("NO DIFFERENCES IN FILES...EXITING COMPARE PROCEDURE.");
+            let data = {
+                titles: this.sheets.map((x)=>x.title),
+                differences: [],
+                message: "No Sheets submitted"
+            }
             return;
         }
         console.log("INITIATING COMPARE PROCEDURE...");
@@ -55,16 +71,21 @@ ${metrics}`);
 
                 // check for equality
                 if (!cells.reduce((a, b) => { return (a === b) ? a : NaN})) {
-                    this.differences.push({cells: cells, y: y, x: x});
+                    this.differences.push({cells: cells, y: y+1, x: this.columnNumberToLetters(x)});
                 }
             }
         }
         console.log("COMPARE PROCEDURE TERMINATING...");
-        console.log(`FOUND ${this.differences.length} DIFFERENCES`);
-        var data = {
+        let data = {
             titles: this.sheets.map((x)=>x.title),
-            differences: this.differences
+            differences: this.differences.filter((diff)=> {
+                // might need to pass over twice, once to check for 
+                // null and once to check for undefined
+                // if they are meaningfully different values in excel
+                return !diff.cells.every((c)=>c===null||c===undefined);
+            })
         }
+        console.log(`FOUND ${data.differences.length} DIFFERENCES`);
         return data;
     }
 

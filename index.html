@@ -109,18 +109,12 @@ angular.module("comparer", [])
             if ($scope.toCompare === $scope.workbooks.length) {
                 var domCaseSensitive = document.getElementsByName("casesensitive")[0];
                 // begin compare
-                let comparer = new SheetCompare().configure($scope.workbooks.length, domCaseSensitive.checked, function(diffs) {
-                        console.log("done?");
-                        console.log(diffs);
-                });
+                let comparer = new SheetCompare().configure($scope.workbooks.length, domCaseSensitive.checked);
                 $scope.workbooks.forEach((wb) => {
                         comparer.registerSheet(new WBContainer(wb));
                 });
                 let data = comparer.compare();
-                $scope.differences = data.differences.filter((diff)=> {
-                  return !diff.cells.every((c)=>c===null||c===undefined);
-                });
-                console.log($scope.differences[2]);
+                $scope.differences = data.differences;
                 $scope.titles = data.titles;
                 $scope.workbooks = [];
                 $scope.toCompare = 0;
